@@ -10,7 +10,7 @@ export const userController = {
         const { page } = req.query
 
         if (!page)
-            return res.status(400).json({ msg: "Por favor informe a página" })
+            return res.status(400).json({ msg: "Please inform the page." })
 
         const result = await db.query.users.findMany({
             orderBy: [asc(users.name)],
