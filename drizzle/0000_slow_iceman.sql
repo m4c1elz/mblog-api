@@ -1,6 +1,6 @@
 -- Current sql file was generated after introspecting the database
 -- If you want to run this migration please uncomment this code before executing migrations
-/*
+
 CREATE TABLE `comments` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`post_id` int NOT NULL,
@@ -48,4 +48,3 @@ ALTER TABLE `comments` ADD CONSTRAINT `fk_comments_postid` FOREIGN KEY (`post_id
 ALTER TABLE `comments` ADD CONSTRAINT `fk_comments_userid` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `posts` ADD CONSTRAINT `fk_posts_userid` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `refresh_tokens` ADD CONSTRAINT `fk_refreshtokens_userid` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;
-*/

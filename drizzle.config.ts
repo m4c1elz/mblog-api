@@ -5,9 +5,11 @@ export default defineConfig({
     out: "./drizzle",
     schema: "./src/db/schema/index.ts",
     dbCredentials: {
-        url: process.env.DATABASE_URL!,
+        url: process.env.DATABASE_URL,
     },
     introspect: {
         casing: "camel",
     },
+    verbose: true,
+    strict: true,
 })

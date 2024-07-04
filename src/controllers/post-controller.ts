@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { and, eq } from "drizzle-orm"
+import { eq } from "drizzle-orm"
 import { db } from "../db/connection"
 import { users, posts } from "../db/schema"
 import type { Post } from "../types/post"
@@ -13,7 +13,6 @@ export const postController = {
                 atsign: users.atsign,
                 post: posts.post,
                 createdAt: posts.createdAt,
-                updatedAt: posts.updatedAt == null ? null : posts.updatedAt,
             })
             .from(users)
             .innerJoin(posts, eq(users.id, posts.userId))
@@ -39,7 +38,7 @@ export const postController = {
     },
     async createPost(req: Request, res: Response) {
         const { userId } = req.user
-        const { post } = req.body
+        const { post }: Post = req.body
 
         await db.insert(posts).values({
             userId,

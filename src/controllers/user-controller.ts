@@ -7,6 +7,11 @@ import type { User } from "../types/user"
 
 export const userController = {
     async getUsers(req: Request, res: Response) {
+        const { page } = req.query
+
+        if (!page)
+            return res.status(400).json({ msg: "Por favor informe a página" })
+
         const result = await db.query.users.findMany({
             orderBy: [asc(users.name)],
             columns: {
@@ -19,6 +24,8 @@ export const userController = {
                 createdAt: true,
                 updatedAt: true,
             },
+            limit: 10,
+            offset: (Number(page) - 1) * 10,
         })
 
         return res.json(result)

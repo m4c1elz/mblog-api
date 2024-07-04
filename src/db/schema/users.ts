@@ -17,12 +17,12 @@ export const users = mysqlTable(
     "users",
     {
         id: int("id").autoincrement().notNull(),
-        email: varchar("email", { length: 80 }).notNull(),
+        email: varchar("email", { length: 80 }).unique().notNull(),
         password: varchar("password", { length: 72 }).notNull(),
-        name: varchar("name", { length: 30 }).notNull(),
-        followers: int("followers").notNull(),
-        atsign: varchar("atsign", { length: 12 }).notNull(),
-        description: text("description").notNull(),
+        name: varchar("name", { length: 30 }),
+        followers: int("followers").default(0).notNull(),
+        atsign: varchar("atsign", { length: 12 }).unique(),
+        description: text("description"),
         createdAt: datetime("created_at", { mode: "string" })
             .default(sql`(CURRENT_TIMESTAMP)`)
             .notNull(),

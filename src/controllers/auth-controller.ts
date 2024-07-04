@@ -2,9 +2,10 @@ import { Request, Response } from "express"
 import { db } from "../db/connection"
 import { eq } from "drizzle-orm"
 import { refreshTokens, users } from "../db/schema"
-import { compare } from "bcryptjs"
+import { compare, hash } from "bcryptjs"
 import { createTokens } from "../helpers/create-tokens"
 import jwt, { JwtPayload } from "jsonwebtoken"
+import type { User } from "../types/user"
 
 export const authController = {
     async login(req: Request, res: Response) {
@@ -77,5 +78,41 @@ export const authController = {
                 .where(eq(refreshToken, refreshTokens.token))
             return res.sendStatus(403)
         }
+    },
+    async register(req: Request, res: Response) {
+        const { email, password }: User = req.body
+
+        const userAlreadyExists = await db.query.users.findFirst({
+            where: eq(users.email, email),
+        })
+
+        if (userAlreadyExists) {
+            return res.status(409).send("Este usuário já existe!")
+        }
+
+        const [newUser] = await db.insert(users).values({
+            email,
+            password: await hash(password, 10),
+            name: email,
+        })
+
+        const { accessToken, refreshToken } = createTokens({
+            userId: newUser.insertId,
+        })
+
+        await db.insert(refreshTokens).values({
+            userId: newUser.insertId,
+            token: refreshToken,
+            expiresIn: new Date().toLocaleDateString("en-ca"),
+        })
+
+        res.cookie("refresh-token", refreshToken, {
+            httpOnly: true,
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        })
+
+        return res.status(200).json({
+            token: accessToken,
+        })
     },
 }

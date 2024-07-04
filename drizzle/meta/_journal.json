@@ -8,6 +8,20 @@
       "when": 1719794385708,
       "tag": "0000_slow_iceman",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1720055323419,
+      "tag": "0001_removeNotNullConstraints",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1720056249910,
+      "tag": "0002_addUniqueConstraints",
+      "breakpoints": true
     }
   ]
 }
