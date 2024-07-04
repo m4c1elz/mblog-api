@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { eq } from "drizzle-orm"
+import { desc, eq } from "drizzle-orm"
 import { db } from "../db/connection"
 import { users, posts } from "../db/schema"
 import type { Post } from "../types/post"
@@ -13,9 +13,11 @@ export const postController = {
                 atsign: users.atsign,
                 post: posts.post,
                 createdAt: posts.createdAt,
+                updatedAt: posts.updatedAt,
             })
             .from(users)
             .innerJoin(posts, eq(users.id, posts.userId))
+            .orderBy(desc(posts.createdAt))
 
         res.status(200).json(result)
     },
