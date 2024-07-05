@@ -18,7 +18,7 @@ export const comments = mysqlTable(
             .references(() => posts.id),
         userId: int("user_id")
             .notNull()
-            .references(() => users.id),
+            .references(() => users.id, { onDelete: "cascade" }),
         comment: varchar("comment", { length: 255 }).notNull(),
         createdAt: datetime("created_at", { mode: "string" })
             .default(sql`(CURRENT_TIMESTAMP)`)

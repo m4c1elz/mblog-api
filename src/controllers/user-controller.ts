@@ -70,4 +70,11 @@ export const userController = {
 
         return res.sendStatus(201)
     },
+    async deleteUser(req: Request, res: Response) {
+        const { id } = req.params
+
+        await db.delete(users).where(eq(users.id, Number(id)))
+
+        return res.sendStatus(200)
+    },
 }

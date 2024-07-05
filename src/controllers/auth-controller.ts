@@ -6,6 +6,7 @@ import { compare, hash } from "bcryptjs"
 import { createTokens } from "../helpers/create-tokens"
 import jwt, { JwtPayload } from "jsonwebtoken"
 import type { User } from "../types/user"
+import { sendConfirmationEmail } from "../mail/mail"
 
 export const authController = {
     async login(req: Request, res: Response) {
@@ -94,25 +95,55 @@ export const authController = {
             email,
             password: await hash(password, 10),
             name: email,
+            isVerified: 0,
         })
 
-        const { accessToken, refreshToken } = createTokens({
-            userId: newUser.insertId,
-        })
-
-        await db.insert(refreshTokens).values({
-            userId: newUser.insertId,
-            token: refreshToken,
-            expiresIn: new Date().toLocaleDateString("en-ca"),
-        })
-
-        res.cookie("refresh-token", refreshToken, {
-            httpOnly: true,
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        const accessToken = jwt.sign(
+            {
+                userId: newUser.insertId,
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "24h",
+            }
+        )
+        // email auth logic enters here
+        sendConfirmationEmail({
+            to: email,
+            token: accessToken,
         })
 
         return res.status(200).json({
-            token: accessToken,
+            msg: "Por favor, verifique seu email.",
         })
+    },
+    async verifyEmail(req: Request, res: Response) {
+        const { token } = req.params
+
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET)
+            const { userId } = decoded as { userId: number }
+            const user = await db.query.users.findFirst({
+                where: eq(users.id, userId),
+            })
+            if (!user) {
+                return res.send("Este usuário não existe!")
+            }
+
+            await db
+                .update(users)
+                .set({
+                    isVerified: 1,
+                })
+                .where(eq(users.id, userId))
+
+            // will change to a redirect when front-end gets to work
+            return res.status(200).send({
+                msg: "E-mail verificado. Agora você pode fazer login normalmente.",
+            })
+        } catch (error) {
+            console.log(error)
+            return res.sendStatus(500)
+        }
     },
 }

@@ -13,7 +13,7 @@ export const refreshTokens = mysqlTable(
         id: int("id").autoincrement().notNull(),
         userId: int("user_id")
             .notNull()
-            .references(() => users.id),
+            .references(() => users.id, { onDelete: "cascade" }),
         token: text("token").notNull(),
         expiresIn: datetime("expires_in", { mode: "string" }).notNull(),
     },

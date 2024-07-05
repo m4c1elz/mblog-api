@@ -15,7 +15,7 @@ export const posts = mysqlTable(
         id: int("id").autoincrement().notNull(),
         userId: int("user_id")
             .notNull()
-            .references(() => users.id),
+            .references(() => users.id, { onDelete: "cascade" }),
         post: varchar("post", { length: 255 }).notNull(),
         likes: int("likes").default(0),
         createdAt: datetime("created_at", { mode: "string" })
