@@ -99,10 +99,13 @@ export const authController = {
             return res.status(409).send("Este usuário já existe!")
         }
 
+        const atsign = email.match(/^[^@]+/)![0]
+
         const [newUser] = await db.insert(users).values({
             email,
             password: await hash(password, 10),
             name: email,
+            atsign,
             isVerified: 0,
         })
 

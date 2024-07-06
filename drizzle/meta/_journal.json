@@ -29,6 +29,20 @@
       "when": 1720213228114,
       "tag": "0003_salty_reavers",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1720299737512,
+      "tag": "0004_damp_moonstone",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1720300159636,
+      "tag": "0005_brave_frightful_four",
+      "breakpoints": true
     }
   ]
 }

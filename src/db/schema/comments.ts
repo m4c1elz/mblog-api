@@ -15,7 +15,7 @@ export const comments = mysqlTable(
         id: int("id").autoincrement().notNull(),
         postId: int("post_id")
             .notNull()
-            .references(() => posts.id),
+            .references(() => posts.id, { onDelete: "cascade" }),
         userId: int("user_id")
             .notNull()
             .references(() => users.id, { onDelete: "cascade" }),
