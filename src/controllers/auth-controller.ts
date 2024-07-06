@@ -16,7 +16,8 @@ export const authController = {
             where: eq(users.email, email),
         })
 
-        if (!user) return res.json({ msg: "Esse usuário não existe." })
+        if (!user)
+            return res.status(404).json({ msg: "Esse usuário não existe." })
         if (user.isVerified !== 1) return res.sendStatus(403)
 
         const isPasswordCorrect = await compare(password, user.password)
