@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { desc, eq } from "drizzle-orm"
 import { db } from "../db/connection"
-import { users, posts } from "../db/schema"
+import { users, posts, comments } from "../db/schema"
 import type { Post } from "../types/post"
 
 export const postController = {
@@ -25,10 +25,29 @@ export const postController = {
         const { id } = req.params
 
         const result = await db.query.posts.findFirst({
+            columns: {
+                post: true,
+                likes: true,
+                createdAt: true,
+                updatedAt: true,
+            },
             where: eq(posts.id, Number(id)),
             with: {
                 user: true,
-                comments: true,
+                comments: {
+                    columns: {
+                        comment: true,
+                        createdAt: true,
+                        updatedAt: true,
+                    },
+                    with: {
+                        user: {
+                            columns: {
+                                atsign: true,
+                            },
+                        },
+                    },
+                },
             },
         })
 
@@ -41,6 +60,19 @@ export const postController = {
         await db.insert(posts).values({
             userId,
             post,
+        })
+
+        return res.sendStatus(201)
+    },
+    async createComment(req: Request, res: Response) {
+        const { userId } = req.user
+        const { id } = req.params
+        const { comment } = req.body
+
+        await db.insert(comments).values({
+            userId,
+            postId: Number(id),
+            comment,
         })
 
         return res.sendStatus(201)
