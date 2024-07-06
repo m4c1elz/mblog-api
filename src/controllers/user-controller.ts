@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { db } from "../db/connection"
-import { asc, eq, like } from "drizzle-orm"
+import { eq, like } from "drizzle-orm"
 import { users } from "../db/schema"
 import { hash } from "bcryptjs"
 import type { User } from "../types/user"

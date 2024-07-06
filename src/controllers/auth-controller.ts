@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { db } from "../db/connection"
-import { eq } from "drizzle-orm"
+import { desc, eq } from "drizzle-orm"
 import { refreshTokens, users } from "../db/schema"
 import { compare, hash } from "bcryptjs"
 import { createTokens } from "../helpers/create-tokens"
@@ -45,6 +45,12 @@ export const authController = {
 
         res.status(200).json({
             token: accessToken,
+            user: {
+                name: user.name,
+                atsign: user.atsign,
+                email: user.email,
+                description: user.description,
+            },
         })
     },
     async refresh(req: Request, res: Response) {
@@ -123,6 +129,13 @@ export const authController = {
             console.log(error)
             return res.sendStatus(500)
         }
+    },
+    async logout(req: Request, res: Response) {
+        const { userId }: { userId: number } = req.user
+
+        await db.delete(refreshTokens).where(eq(refreshTokens.userId, userId))
+        res.clearCookie("refresh-token")
+        return res.sendStatus(204)
     },
     async verifyEmail(req: Request, res: Response) {
         const { token } = req.params
