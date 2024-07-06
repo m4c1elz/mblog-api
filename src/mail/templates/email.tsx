@@ -62,7 +62,8 @@ export function Email({
                             <Container className="text-center">
                                 <Text>
                                     Se foi mesmo você, acesse o botão abaixo
-                                    para se cadastrar na plataforma.
+                                    para se cadastrar na plataforma. O link irá
+                                    expirar após 24 horas.
                                 </Text>
                                 <Link
                                     className="my-6 px-2 py-3.5 font-semibold bg-sky-500 text-white rounded hover:bg-sky-600"
