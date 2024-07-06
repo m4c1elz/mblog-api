@@ -16,17 +16,11 @@ export const authController = {
             where: eq(users.email, email),
         })
 
-        if (!user) {
-            return res.json({ msg: "Esse usuário não existe." })
-        }
-
+        if (!user) return res.json({ msg: "Esse usuário não existe." })
         if (user.isVerified !== 1) return res.sendStatus(403)
 
         const isPasswordCorrect = await compare(password, user.password)
-
-        if (!isPasswordCorrect) {
-            return res.sendStatus(403)
-        }
+        if (!isPasswordCorrect) return res.sendStatus(403)
 
         const { accessToken, refreshToken } = createTokens({
             userId: user.id,
@@ -56,9 +50,7 @@ export const authController = {
     async refresh(req: Request, res: Response) {
         const cookies = req.cookies
 
-        if (!cookies || !cookies["refresh-token"]) {
-            return res.sendStatus(406)
-        }
+        if (!cookies || !cookies["refresh-token"]) return res.sendStatus(406)
 
         const refreshToken = cookies["refresh-token"]
         try {
@@ -71,9 +63,7 @@ export const authController = {
                 where: eq(refreshTokens.token, refreshToken),
             })
 
-            if (!token) {
-                return res.status(403).send("Token inválido.")
-            }
+            if (!token) return res.status(403).send("Token inválido.")
 
             const { userId } = decodedToken
 
@@ -95,9 +85,8 @@ export const authController = {
             where: eq(users.email, email),
         })
 
-        if (userAlreadyExists) {
+        if (userAlreadyExists)
             return res.status(409).send("Este usuário já existe!")
-        }
 
         const atsign = email.match(/^[^@]+/)![0]
 
@@ -149,9 +138,7 @@ export const authController = {
             const user = await db.query.users.findFirst({
                 where: eq(users.id, userId),
             })
-            if (!user) {
-                return res.send("Este usuário não existe!")
-            }
+            if (!user) return res.send("Este usuário não existe!")
 
             await db
                 .update(users)

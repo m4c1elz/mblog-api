@@ -56,13 +56,8 @@ export const postController = {
             where: eq(posts.id, Number(id)),
         })
 
-        if (!postToCheck) {
-            return res.sendStatus(404)
-        }
-
-        if (postToCheck.userId !== userId) {
-            return res.sendStatus(403)
-        }
+        if (!postToCheck) return res.sendStatus(404)
+        if (postToCheck.userId !== userId) return res.sendStatus(403)
 
         // updating post
         await db
@@ -83,13 +78,8 @@ export const postController = {
             where: eq(posts.id, Number(postId)),
         })
 
-        if (!postToCheck) {
-            return res.sendStatus(404)
-        }
-
-        if (postToCheck.userId !== userId) {
-            return res.sendStatus(403)
-        }
+        if (!postToCheck) return res.sendStatus(404)
+        if (postToCheck.userId !== userId) return res.sendStatus(403)
 
         await db.delete(posts).where(eq(posts.id, Number(postId)))
 
