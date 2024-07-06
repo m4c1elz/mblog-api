@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { db } from "../db/connection"
-import { asc, eq } from "drizzle-orm"
+import { asc, eq, like } from "drizzle-orm"
 import { users } from "../db/schema"
 import { hash } from "bcryptjs"
 import type { User } from "../types/user"
@@ -12,21 +12,20 @@ export const userController = {
         if (!page)
             return res.status(400).json({ msg: "Please inform the page." })
 
-        const result = await db.query.users.findMany({
-            orderBy: [asc(users.name)],
-            columns: {
-                id: true,
-                name: true,
-                atsign: true,
-                email: true,
-                followers: true,
-                description: true,
-                createdAt: true,
-                updatedAt: true,
-            },
-            limit: 10,
-            offset: (Number(page) - 1) * 10,
-        })
+        const result = await db
+            .select({
+                id: users.id,
+                name: users.name,
+                atsign: users.atsign,
+                email: users.email,
+                followers: users.followers,
+                description: users.description,
+                createdAt: users.createdAt,
+                updatedAt: users.updatedAt,
+            })
+            .from(users)
+            .limit(10)
+            .offset((Number(page) - 1) * 10)
 
         return res.json(result)
     },
