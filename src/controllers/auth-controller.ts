@@ -108,14 +108,19 @@ export const authController = {
             }
         )
         // email auth logic enters here
-        sendConfirmationEmail({
-            to: email,
-            token: accessToken,
-        })
+        try {
+            sendConfirmationEmail({
+                to: email,
+                token: accessToken,
+            })
 
-        return res.status(200).json({
-            msg: "Por favor, verifique seu email.",
-        })
+            return res.status(200).json({
+                msg: "Por favor, verifique seu email.",
+            })
+        } catch (error) {
+            console.log(error)
+            return res.sendStatus(500)
+        }
     },
     async verifyEmail(req: Request, res: Response) {
         const { token } = req.params

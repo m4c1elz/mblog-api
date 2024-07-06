@@ -37,7 +37,4 @@ export function sendConfirmationEmail({
         .then(emailInfo => {
             console.log(emailInfo.envelope)
         })
-        .catch(err => {
-            console.log(err)
-        })
 }

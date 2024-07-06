@@ -30,6 +30,7 @@ export const postController = {
                 name: users.name,
                 atsign: users.atsign,
                 post: posts.post,
+                likes: posts.likes,
                 createdAt: posts.createdAt,
             })
             .from(users)

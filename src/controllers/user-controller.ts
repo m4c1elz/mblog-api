@@ -78,6 +78,7 @@ export const userController = {
         if (Number(id) !== userId) return res.sendStatus(403)
 
         await db.delete(users).where(eq(users.id, Number(id)))
+        res.clearCookie("refresh-token")
 
         return res.sendStatus(200)
     },
