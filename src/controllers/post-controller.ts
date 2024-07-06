@@ -24,18 +24,13 @@ export const postController = {
     async getPost(req: Request, res: Response) {
         const { id } = req.params
 
-        const [result] = await db
-            .select({
-                id: posts.id,
-                name: users.name,
-                atsign: users.atsign,
-                post: posts.post,
-                likes: posts.likes,
-                createdAt: posts.createdAt,
-            })
-            .from(users)
-            .innerJoin(posts, eq(users.id, posts.userId))
-            .where(eq(posts.id, Number(id)))
+        const result = await db.query.posts.findFirst({
+            where: eq(posts.id, Number(id)),
+            with: {
+                user: true,
+                comments: true,
+            },
+        })
 
         return res.json(result)
     },

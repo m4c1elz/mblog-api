@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { db } from "../db/connection"
-import { desc, eq } from "drizzle-orm"
+import { eq } from "drizzle-orm"
 import { refreshTokens, users } from "../db/schema"
 import { compare, hash } from "bcryptjs"
 import { createTokens } from "../helpers/create-tokens"
