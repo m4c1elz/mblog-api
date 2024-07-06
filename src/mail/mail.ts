@@ -1,14 +1,11 @@
-import nodemailer, { SendMailOptions } from "nodemailer"
+import nodemailer from "nodemailer"
 import { Email } from "./templates/email"
 import { render } from "@react-email/components"
 
 const { API_MAIL_USER, API_MAIL_PASS, BASE_URL } = process.env
 
 const transport = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    ssl: true,
-    tls: true,
+    service: "gmail",
     auth: {
         user: API_MAIL_USER,
         pass: API_MAIL_PASS,

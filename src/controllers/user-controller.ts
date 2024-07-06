@@ -72,6 +72,9 @@ export const userController = {
     },
     async deleteUser(req: Request, res: Response) {
         const { id } = req.params
+        const { userId }: { userId: number } = req.user
+
+        if (Number(id) !== userId) return res.sendStatus(403)
 
         await db.delete(users).where(eq(users.id, Number(id)))
 
