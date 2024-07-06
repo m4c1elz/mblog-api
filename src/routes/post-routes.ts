@@ -4,9 +4,12 @@ import { validateToken } from "../middlewares/validate-token"
 
 const router = Router()
 
-router.get("/", validateToken, postController.getPosts)
-router.get("/:id", validateToken, postController.getPost)
-router.post("/", validateToken, postController.createPost)
-router.put("/:id", validateToken, postController.updatePost)
+router.use("*", validateToken)
+
+router.get("/", postController.getPosts)
+router.get("/:id", postController.getPost)
+router.post("/", postController.createPost)
+router.put("/:id", postController.updatePost)
+router.delete("/:id", postController.deletePost)
 
 export const postRouter = router

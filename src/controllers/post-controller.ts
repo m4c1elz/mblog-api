@@ -79,4 +79,24 @@ export const postController = {
 
         return res.sendStatus(204)
     },
+    async deletePost(req: Request, res: Response) {
+        const { id: postId } = req.params
+        const { userId }: { userId: number } = req.user
+
+        const postToCheck = await db.query.posts.findFirst({
+            where: eq(posts.id, Number(postId)),
+        })
+
+        if (!postToCheck) {
+            return res.sendStatus(404)
+        }
+
+        if (postToCheck.userId !== userId) {
+            return res.sendStatus(403)
+        }
+
+        await db.delete(posts).where(eq(posts.id, Number(postId)))
+
+        return res.sendStatus(204)
+    },
 }
