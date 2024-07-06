@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm"
 import { refreshTokens, users } from "../db/schema"
 import { compare, hash } from "bcryptjs"
 import { createTokens } from "../helpers/create-tokens"
-import jwt, { JwtPayload } from "jsonwebtoken"
+import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken"
 import type { User } from "../types/user"
 import { sendConfirmationEmail } from "../mail/mail"
 
@@ -72,11 +72,14 @@ export const authController = {
 
             return res.status(200).json({ token: accessToken })
         } catch (error) {
-            console.log(error)
-            await db
-                .delete(refreshTokens)
-                .where(eq(refreshToken, refreshTokens.token))
-            return res.sendStatus(403)
+            if (error instanceof TokenExpiredError) {
+                console.log(error.message)
+                await db
+                    .delete(refreshTokens)
+                    .where(eq(refreshToken, refreshTokens.token))
+                return res.status(403).send("Este token foi expirado.")
+            }
+            return res.sendStatus(500)
         }
     },
     async register(req: Request, res: Response) {
@@ -153,7 +156,9 @@ export const authController = {
                 msg: "E-mail verificado. Agora você pode fazer login normalmente.",
             })
         } catch (error) {
-            console.log(error)
+            if (error instanceof TokenExpiredError) {
+                return res.status(401).send("Este link expirou.")
+            }
             return res.sendStatus(500)
         }
     },
