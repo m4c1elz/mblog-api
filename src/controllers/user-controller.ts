@@ -7,7 +7,7 @@ import type { User } from "../types/user"
 
 export const userController = {
     async getUsers(req: Request, res: Response) {
-        const { page } = req.query
+        const { page, search } = req.query
 
         if (!page)
             return res.status(400).json({ msg: "Please inform the page." })
@@ -26,6 +26,8 @@ export const userController = {
             .from(users)
             .limit(10)
             .offset((Number(page) - 1) * 10)
+            .orderBy(users.name)
+            .where(like(users.name, search ? `%${search}%` : "%%"))
 
         return res.json(result)
     },
