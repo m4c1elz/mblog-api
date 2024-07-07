@@ -66,6 +66,7 @@ export const userController = {
                 ...userData,
                 password:
                     userData.password && (await hash(userData.password, 10)),
+                updatedAt: new Date(),
             })
             .where(eq(users.id, userId))
 

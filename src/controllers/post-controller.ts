@@ -102,7 +102,7 @@ export const postController = {
             .update(posts)
             .set({
                 post,
-                updatedAt: new Date().toLocaleDateString("en-ca"),
+                updatedAt: new Date(),
             })
             .where(eq(posts.id, Number(id)))
 
@@ -127,7 +127,7 @@ export const postController = {
             .update(comments)
             .set({
                 comment,
-                updatedAt: new Date().toLocaleDateString("en-ca"),
+                updatedAt: new Date(),
             })
             .where(eq(comments.id, Number(commentId)))
 

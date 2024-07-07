@@ -30,7 +30,7 @@ export const authController = {
         await db.insert(refreshTokens).values({
             userId: user.id,
             token: refreshToken,
-            expiresIn: new Date().toLocaleDateString("en-ca"),
+            expiresIn: new Date(),
         })
 
         res.cookie("refresh-token", refreshToken, {
@@ -148,6 +148,7 @@ export const authController = {
                 .update(users)
                 .set({
                     isVerified: 1,
+                    updatedAt: new Date(),
                 })
                 .where(eq(users.id, userId))
 
