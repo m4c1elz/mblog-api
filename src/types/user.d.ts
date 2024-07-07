@@ -6,6 +6,4 @@ export type User = {
     email: string
     password: string
     followers: number
-    createdAt: string
-    updatedAt: string
 }
