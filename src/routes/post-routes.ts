@@ -10,6 +10,7 @@ router.get("/", postController.getPosts)
 router.get("/:id", postController.getPost)
 router.post("/", postController.createPost)
 router.post("/:id/comments", postController.createComment)
+router.put("/:postid/comments/:commentid", postController.updateComment)
 router.put("/:id", postController.updatePost)
 router.delete("/:id", postController.deletePost)
 

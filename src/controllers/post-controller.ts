@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { desc, eq } from "drizzle-orm"
+import { and, desc, eq } from "drizzle-orm"
 import { db } from "../db/connection"
 import { users, posts, comments } from "../db/schema"
 import type { Post } from "../types/post"
@@ -26,6 +26,7 @@ export const postController = {
 
         const result = await db.query.posts.findFirst({
             columns: {
+                id: true,
                 post: true,
                 likes: true,
                 createdAt: true,
@@ -106,6 +107,30 @@ export const postController = {
             .where(eq(posts.id, Number(id)))
 
         return res.sendStatus(204)
+    },
+    async updateComment(req: Request, res: Response) {
+        const { commentid: commentId, postid: postId } = req.params
+        const { userId }: { userId: number } = req.user
+        const { comment } = req.body
+
+        const commentToEdit = await db.query.comments.findFirst({
+            where: and(
+                eq(comments.id, Number(commentId)),
+                eq(posts.id, Number(postId))
+            ),
+        })
+
+        if (!commentToEdit) return res.sendStatus(404)
+        if (comment?.userId !== userId) return res.sendStatus(403)
+
+        await db
+            .update(comments)
+            .set({
+                comment,
+            })
+            .where(eq(comments.id, Number(commentId)))
+
+        return res.sendStatus(201)
     },
     async deletePost(req: Request, res: Response) {
         const { id: postId } = req.params
