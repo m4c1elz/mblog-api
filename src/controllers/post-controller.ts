@@ -33,7 +33,12 @@ export const postController = {
             },
             where: eq(posts.id, Number(id)),
             with: {
-                user: true,
+                user: {
+                    columns: {
+                        name: true,
+                        atsign: true,
+                    },
+                },
                 comments: {
                     columns: {
                         comment: true,
