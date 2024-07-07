@@ -116,17 +116,18 @@ export const postController = {
         const commentToEdit = await db.query.comments.findFirst({
             where: and(
                 eq(comments.id, Number(commentId)),
-                eq(posts.id, Number(postId))
+                eq(comments.postId, Number(postId))
             ),
         })
 
         if (!commentToEdit) return res.sendStatus(404)
-        if (comment?.userId !== userId) return res.sendStatus(403)
+        if (commentToEdit.userId !== userId) return res.sendStatus(403)
 
         await db
             .update(comments)
             .set({
                 comment,
+                updatedAt: new Date().toLocaleDateString("en-ca"),
             })
             .where(eq(comments.id, Number(commentId)))
 
