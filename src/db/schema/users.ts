@@ -23,10 +23,10 @@ export const users = mysqlTable(
         followers: int("followers").default(0).notNull(),
         atsign: varchar("atsign", { length: 20 }).unique(),
         description: text("description"),
-        createdAt: datetime("created_at", { mode: "string" })
+        createdAt: datetime("created_at", { mode: "date" })
             .default(sql`(CURRENT_TIMESTAMP)`)
             .notNull(),
-        updatedAt: datetime("updated_at", { mode: "string" }),
+        updatedAt: datetime("updated_at", { mode: "date" }),
         isVerified: tinyint("is_verified").default(0).notNull(),
     },
     table => {

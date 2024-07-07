@@ -20,10 +20,10 @@ export const comments = mysqlTable(
             .notNull()
             .references(() => users.id, { onDelete: "cascade" }),
         comment: varchar("comment", { length: 255 }).notNull(),
-        createdAt: datetime("created_at", { mode: "string" })
+        createdAt: datetime("created_at", { mode: "date" })
             .default(sql`(CURRENT_TIMESTAMP)`)
             .notNull(),
-        updatedAt: datetime("updated_at", { mode: "string" }),
+        updatedAt: datetime("updated_at", { mode: "date" }),
     },
     table => {
         return {

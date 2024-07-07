@@ -15,7 +15,7 @@ export const refreshTokens = mysqlTable(
             .notNull()
             .references(() => users.id, { onDelete: "cascade" }),
         token: text("token").notNull(),
-        expiresIn: datetime("expires_in", { mode: "string" }).notNull(),
+        expiresIn: datetime("expires_in", { mode: "date" }).notNull(),
     },
     table => {
         return {

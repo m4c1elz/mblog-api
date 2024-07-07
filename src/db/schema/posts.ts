@@ -18,10 +18,10 @@ export const posts = mysqlTable(
             .references(() => users.id, { onDelete: "cascade" }),
         post: varchar("post", { length: 255 }).notNull(),
         likes: int("likes").default(0),
-        createdAt: datetime("created_at", { mode: "string" })
+        createdAt: datetime("created_at", { mode: "date" })
             .default(sql`(CURRENT_TIMESTAMP)`)
             .notNull(),
-        updatedAt: datetime("updated_at", { mode: "string" }),
+        updatedAt: datetime("updated_at", { mode: "date" }),
     },
     table => {
         return {
