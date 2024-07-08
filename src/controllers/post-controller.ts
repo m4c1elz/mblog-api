@@ -148,4 +148,22 @@ export const postController = {
 
         return res.sendStatus(204)
     },
+    async deleteComment(req: Request, res: Response) {
+        const { commentid: commentId, postid: postId } = req.params
+        const { userId }: { userId: number } = req.user
+
+        const comment = await db.query.comments.findFirst({
+            where: and(
+                eq(comments.id, Number(commentId)),
+                eq(comments.postId, Number(postId))
+            ),
+        })
+
+        if (!comment) return res.sendStatus(404)
+        if (comment.userId !== userId) return res.sendStatus(403)
+
+        await db.delete(comments).where(eq(comments.id, Number(commentId)))
+
+        return res.sendStatus(204)
+    },
 }

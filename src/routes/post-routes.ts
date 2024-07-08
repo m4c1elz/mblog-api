@@ -13,5 +13,6 @@ router.post("/:id/comments", postController.createComment)
 router.put("/:postid/comments/:commentid", postController.updateComment)
 router.put("/:id", postController.updatePost)
 router.delete("/:id", postController.deletePost)
+router.delete("/:postid/comments/:commentid", postController.deleteComment)
 
 export const postRouter = router
