@@ -57,7 +57,7 @@ export const userController = {
         return res.json(result)
     },
     async updateUser(req: Request, res: Response) {
-        const { userId }: { userId: number } = req.user
+        const { userId } = req.user
         const userData: User = req.body
 
         await db
@@ -74,7 +74,7 @@ export const userController = {
     },
     async deleteUser(req: Request, res: Response) {
         const { id } = req.params
-        const { userId }: { userId: number } = req.user
+        const { userId } = req.user
 
         if (Number(id) !== userId) return res.sendStatus(403)
 

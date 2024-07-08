@@ -12,6 +12,6 @@ namespace NodeJS {
 
 namespace Express {
     interface Request {
-        user: any
+        user: import("./user-payload").UserPayload
     }
 }

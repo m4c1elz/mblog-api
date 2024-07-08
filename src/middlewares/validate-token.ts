@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
+import { UserPayload } from "../types/user-payload"
 
 export function validateToken(req: Request, res: Response, next: NextFunction) {
     const authHeaders = req.headers.authorization
@@ -14,7 +15,7 @@ export function validateToken(req: Request, res: Response, next: NextFunction) {
             console.error(err)
             return res.sendStatus(403)
         }
-        req.user = decoded
+        req.user = decoded as UserPayload
         next()
     })
 }

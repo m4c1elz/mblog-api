@@ -127,7 +127,7 @@ export const authController = {
         }
     },
     async logout(req: Request, res: Response) {
-        const { userId }: { userId: number } = req.user
+        const { userId } = req.user
 
         await db.delete(refreshTokens).where(eq(refreshTokens.userId, userId))
         res.clearCookie("refresh-token")

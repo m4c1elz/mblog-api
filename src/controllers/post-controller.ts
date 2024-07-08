@@ -88,7 +88,7 @@ export const postController = {
         const { post }: Post = req.body
 
         // checking if current user is the author of the post
-        const { userId }: { userId: number } = req.user
+        const { userId } = req.user
 
         const postToCheck = await db.query.posts.findFirst({
             where: eq(posts.id, Number(id)),
@@ -110,7 +110,7 @@ export const postController = {
     },
     async updateComment(req: Request, res: Response) {
         const { commentid: commentId, postid: postId } = req.params
-        const { userId }: { userId: number } = req.user
+        const { userId } = req.user
         const { comment } = req.body
 
         const commentToEdit = await db.query.comments.findFirst({
@@ -135,7 +135,7 @@ export const postController = {
     },
     async deletePost(req: Request, res: Response) {
         const { id: postId } = req.params
-        const { userId }: { userId: number } = req.user
+        const { userId } = req.user
 
         const postToCheck = await db.query.posts.findFirst({
             where: eq(posts.id, Number(postId)),
@@ -150,7 +150,7 @@ export const postController = {
     },
     async deleteComment(req: Request, res: Response) {
         const { commentid: commentId, postid: postId } = req.params
-        const { userId }: { userId: number } = req.user
+        const { userId } = req.user
 
         const comment = await db.query.comments.findFirst({
             where: and(
