@@ -6,6 +6,8 @@ import type { Post } from "../types/post"
 
 export const postController = {
     async getPosts(req: Request, res: Response) {
+        const { page } = req.query
+
         const result = await db
             .select({
                 id: posts.id,
@@ -22,6 +24,8 @@ export const postController = {
             .leftJoin(comments, eq(posts.id, comments.postId))
             .orderBy(desc(posts.createdAt))
             .groupBy(posts.id, posts.post)
+            .limit(15)
+            .offset((Number(page) - 1) * 15)
 
         res.status(200).json(result)
     },

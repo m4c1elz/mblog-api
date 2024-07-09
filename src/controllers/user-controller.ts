@@ -24,8 +24,8 @@ export const userController = {
                 updatedAt: users.updatedAt,
             })
             .from(users)
-            .limit(10)
-            .offset((Number(page) - 1) * 10)
+            .limit(15)
+            .offset((Number(page) - 1) * 15)
             .orderBy(users.name)
             .where(like(users.name, search ? `%${search}%` : "%%"))
 
