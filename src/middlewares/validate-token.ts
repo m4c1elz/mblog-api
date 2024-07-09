@@ -12,7 +12,7 @@ export function validateToken(req: Request, res: Response, next: NextFunction) {
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
-            console.error(err)
+            console.error(err.message)
             return res.sendStatus(403)
         }
         req.user = decoded as UserPayload

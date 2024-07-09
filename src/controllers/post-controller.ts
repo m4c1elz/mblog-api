@@ -42,6 +42,7 @@ export const postController = {
                 },
                 comments: {
                     columns: {
+                        id: true,
                         comment: true,
                         createdAt: true,
                         updatedAt: true,
@@ -109,7 +110,7 @@ export const postController = {
         return res.sendStatus(204)
     },
     async updateComment(req: Request, res: Response) {
-        const { commentid: commentId, postid: postId } = req.params
+        const { comment_id: commentId, post_id: postId } = req.params
         const { userId } = req.user
         const { comment } = req.body
 
@@ -149,7 +150,7 @@ export const postController = {
         return res.sendStatus(204)
     },
     async deleteComment(req: Request, res: Response) {
-        const { commentid: commentId, postid: postId } = req.params
+        const { comment_id: commentId, post_id: postId } = req.params
         const { userId } = req.user
 
         const comment = await db.query.comments.findFirst({

@@ -10,9 +10,9 @@ router.get("/", postController.getPosts)
 router.get("/:id", postController.getPost)
 router.post("/", postController.createPost)
 router.post("/:id/comments", postController.createComment)
-router.put("/:postid/comments/:commentid", postController.updateComment)
+router.put("/:post_id/comments/:comment_id", postController.updateComment)
 router.put("/:id", postController.updatePost)
 router.delete("/:id", postController.deletePost)
-router.delete("/:postid/comments/:commentid", postController.deleteComment)
+router.delete("/:post_id/comments/:comment_id", postController.deleteComment)
 
 export const postRouter = router
