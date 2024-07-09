@@ -111,7 +111,7 @@ export const authController = {
                 expiresIn: "24h",
             }
         )
-        // email auth logic enters here
+
         try {
             sendConfirmationEmail({
                 to: email,
