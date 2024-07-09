@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { and, desc, eq, sql } from "drizzle-orm"
+import { and, desc, eq, sql, count } from "drizzle-orm"
 import { db } from "../db/connection"
 import { users, posts, comments } from "../db/schema"
 import type { Post } from "../types/post"
@@ -12,12 +12,16 @@ export const postController = {
                 name: users.name,
                 atsign: users.atsign,
                 post: posts.post,
+                likes: posts.likes,
+                comments: count(comments.id),
                 createdAt: posts.createdAt,
                 updatedAt: posts.updatedAt,
             })
             .from(users)
             .innerJoin(posts, eq(users.id, posts.userId))
+            .leftJoin(comments, eq(posts.id, comments.postId))
             .orderBy(desc(posts.createdAt))
+            .groupBy(posts.id, posts.post)
 
         res.status(200).json(result)
     },
