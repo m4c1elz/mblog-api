@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { and, desc, eq } from "drizzle-orm"
+import { and, desc, eq, sql } from "drizzle-orm"
 import { db } from "../db/connection"
 import { users, posts, comments } from "../db/schema"
 import type { Post } from "../types/post"
@@ -71,6 +71,18 @@ export const postController = {
 
         return res.sendStatus(201)
     },
+    async likePost(req: Request, res: Response) {
+        const { id } = req.params
+
+        await db
+            .update(posts)
+            .set({
+                likes: sql`${posts.likes} + 1`,
+            })
+            .where(eq(posts.id, Number(id)))
+
+        return res.sendStatus(201)
+    },
     async createComment(req: Request, res: Response) {
         const { userId } = req.user
         const { id } = req.params
@@ -131,6 +143,18 @@ export const postController = {
                 updatedAt: new Date(),
             })
             .where(eq(comments.id, Number(commentId)))
+
+        return res.sendStatus(201)
+    },
+    async removeLike(req: Request, res: Response) {
+        const { id } = req.params
+
+        await db
+            .update(posts)
+            .set({
+                likes: sql`${posts.likes} - 1`,
+            })
+            .where(eq(posts.id, Number(id)))
 
         return res.sendStatus(201)
     },
