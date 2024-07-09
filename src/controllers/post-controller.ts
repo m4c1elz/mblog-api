@@ -86,6 +86,7 @@ export const postController = {
             .update(posts)
             .set({
                 likes: sql`${posts.likes} + 1`,
+                updatedAt: new Date(),
             })
             .where(eq(posts.id, Number(id)))
 
@@ -161,6 +162,7 @@ export const postController = {
             .update(posts)
             .set({
                 likes: sql`${posts.likes} - 1`,
+                updatedAt: new Date(),
             })
             .where(eq(posts.id, Number(id)))
 
