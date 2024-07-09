@@ -11,7 +11,8 @@
         "db:migrate": "drizzle-kit migrate",
         "db:push": "drizzle-kit push",
         "email:dev": "email dev",
-        "build": "tsup src/server.ts"
+        "build": "tsup src/server.ts",
+        "test": "vitest run"
     },
     "keywords": [],
     "author": "",
@@ -24,11 +25,13 @@
         "@types/node": "^20.14.9",
         "@types/nodemailer": "^6.4.15",
         "@types/react": "^18.3.3",
+        "dotenv": "^16.4.5",
         "drizzle-kit": "^0.22.8",
         "nanospinner": "^1.1.0",
         "tsup": "^8.1.0",
         "tsx": "^4.16.0",
-        "typescript": "^5.5.2"
+        "typescript": "^5.5.2",
+        "vitest": "^2.0.1"
     },
     "dependencies": {
         "@react-email/components": "^0.0.21",
