@@ -32,41 +32,34 @@ export const postController = {
     async getPost(req: Request, res: Response) {
         const { id } = req.params
 
-        const result = await db.query.posts.findFirst({
-            columns: {
-                id: true,
-                post: true,
-                likes: true,
-                createdAt: true,
-                updatedAt: true,
-            },
-            where: eq(posts.id, Number(id)),
-            with: {
-                user: {
-                    columns: {
-                        name: true,
-                        atsign: true,
-                    },
-                },
-                comments: {
-                    columns: {
-                        id: true,
-                        comment: true,
-                        createdAt: true,
-                        updatedAt: true,
-                    },
-                    with: {
-                        user: {
-                            columns: {
-                                atsign: true,
-                            },
-                        },
-                    },
-                },
-            },
-        })
+        const [response] = await db
+            .select({
+                id: posts.id,
+                username: users.name,
+                atsign: users.atsign,
+                post: posts.post,
+                commentCount: count(comments.id),
+                likes: posts.likes,
+                createdAt: posts.createdAt,
+                updatedAt: posts.updatedAt,
+                comments: sql<object[]>`
+                IF (${count(comments.id)} > 0, 
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT("user", ${users.atsign}, "comment", ${
+                    comments.comment
+                }, "createdAt", ${comments.createdAt}, "updatedAt", ${
+                    comments.updatedAt
+                })
+                    ), 
+                JSON_ARRAY())`,
+            })
+            .from(posts)
+            .innerJoin(users, eq(posts.userId, users.id))
+            .leftJoin(comments, eq(comments.postId, posts.id))
+            .where(eq(posts.id, Number(id)))
+            .groupBy(posts.id)
 
-        return res.json(result)
+        return res.json(response)
     },
     async createPost(req: Request, res: Response) {
         const { userId } = req.user
