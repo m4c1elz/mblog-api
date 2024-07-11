@@ -32,7 +32,7 @@ export const postController = {
     async getPost(req: Request, res: Response) {
         const { id } = req.params
 
-        const [response] = await db
+        const [result] = await db
             .select({
                 id: posts.id,
                 username: users.name,
@@ -59,7 +59,7 @@ export const postController = {
             .where(eq(posts.id, Number(id)))
             .groupBy(posts.id)
 
-        return res.json(response)
+        return res.json(result)
     },
     async createPost(req: Request, res: Response) {
         const { userId } = req.user
