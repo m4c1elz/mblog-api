@@ -3,6 +3,7 @@ import { and, desc, eq, sql, count } from "drizzle-orm"
 import { db } from "../db/connection"
 import { users, posts, comments } from "../db/schema"
 import type { Post } from "../types/post"
+import type { Comment } from "../types/comment"
 
 export const postController = {
     async getPosts(req: Request, res: Response) {
@@ -126,7 +127,7 @@ export const postController = {
     async updateComment(req: Request, res: Response) {
         const { comment_id: commentId, post_id: postId } = req.params
         const { userId } = req.user
-        const { comment } = req.body
+        const { comment }: Comment = req.body
 
         const commentToEdit = await db.query.comments.findFirst({
             where: and(
