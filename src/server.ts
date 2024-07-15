@@ -3,10 +3,19 @@ import { postRouter } from "./routes/post-routes"
 import { userRouter } from "./routes/user-routes"
 import { authRouter } from "./routes/auth-routes"
 import cookieParser from "cookie-parser"
+import cors from "cors"
 
 const app = express()
 const port = process.env.PORT || 8080
 
+app.use(
+    cors({
+        origin: process.env.CORS_ORIGIN,
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        allowedHeaders: ["Origin", "Content-Type", "Authorization"],
+    })
+)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
