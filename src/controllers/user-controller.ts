@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { db } from "../db/connection"
-import { eq, like } from "drizzle-orm"
-import { users } from "../db/schema"
+import { desc, eq, like } from "drizzle-orm"
+import { posts, users } from "../db/schema"
 import { hash } from "bcryptjs"
 import type { User } from "../types/user"
 
@@ -39,7 +39,16 @@ export const userController = {
             with:
                 postQuery == "true"
                     ? {
-                          posts: true,
+                          posts: {
+                              columns: {
+                                  id: true,
+                                  post: true,
+                                  likes: true,
+                                  createdAt: true,
+                                  updatedAt: true,
+                              },
+                              orderBy: desc(posts.createdAt),
+                          },
                       }
                     : undefined,
             columns: {
@@ -66,7 +75,16 @@ export const userController = {
             with:
                 postQuery == "true"
                     ? {
-                          posts: true,
+                          posts: {
+                              columns: {
+                                  id: true,
+                                  post: true,
+                                  likes: true,
+                                  createdAt: true,
+                                  updatedAt: true,
+                              },
+                              orderBy: desc(posts.createdAt),
+                          },
                       }
                     : undefined,
             columns: {
