@@ -7,6 +7,7 @@ import { createTokens } from "../helpers/create-tokens"
 import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken"
 import type { User } from "../types/user"
 import { sendConfirmationEmail } from "../mail/mail"
+import { UserPayload } from "../types/user-payload"
 
 export const authController = {
     async login(req: Request, res: Response) {
@@ -41,6 +42,7 @@ export const authController = {
         res.status(200).json({
             token: accessToken,
             user: {
+                id: user.id,
                 name: user.name,
                 atsign: user.atsign,
                 email: user.email,
@@ -99,7 +101,7 @@ export const authController = {
         const [newUser] = await db.insert(users).values({
             email,
             password: await hash(password, 10),
-            name: email,
+            name: atsign,
             atsign,
             isVerified: 0,
         })
@@ -140,7 +142,7 @@ export const authController = {
 
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET)
-            const { userId } = decoded as { userId: number }
+            const { userId } = decoded as UserPayload
             const user = await db.query.users.findFirst({
                 where: eq(users.id, userId),
             })

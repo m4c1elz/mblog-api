@@ -105,14 +105,22 @@ export const userController = {
     },
     async updateUser(req: Request, res: Response) {
         const { userId } = req.user
-        const userData: User = req.body
+        const userData: Partial<User> = req.body
+
+        const updateData: Partial<User> = {
+            ...userData,
+        }
+
+        if (userData.password) {
+            updateData.password = await hash(userData.password, 10)
+        } else {
+            delete updateData.password
+        }
 
         await db
             .update(users)
             .set({
-                ...userData,
-                password:
-                    userData.password && (await hash(userData.password, 10)),
+                ...updateData,
                 updatedAt: new Date(),
             })
             .where(eq(users.id, userId))
