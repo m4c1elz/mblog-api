@@ -31,7 +31,7 @@ export const userController = {
 
         return res.json(result)
     },
-    async getUser(req: Request, res: Response) {
+    async getUserById(req: Request, res: Response) {
         const { id } = req.params
         const { posts: postQuery } = req.query
         const result = await db.query.users.findFirst({
@@ -53,6 +53,35 @@ export const userController = {
                 updatedAt: true,
             },
         })
+
+        if (!result) return res.sendStatus(404)
+
+        return res.json(result)
+    },
+    async getUserByAtsign(req: Request, res: Response) {
+        const { atsign } = req.params
+        const { posts: postQuery } = req.query
+        const result = await db.query.users.findFirst({
+            where: eq(users.atsign, atsign),
+            with:
+                postQuery == "true"
+                    ? {
+                          posts: true,
+                      }
+                    : undefined,
+            columns: {
+                id: true,
+                name: true,
+                atsign: true,
+                email: true,
+                followers: true,
+                description: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        })
+
+        if (!result) return res.sendStatus(404)
 
         return res.json(result)
     },
