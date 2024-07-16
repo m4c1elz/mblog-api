@@ -6,7 +6,7 @@ namespace NodeJS {
         API_MAIL_USER: string
         API_MAIL_PASS: string
         BASE_URL: string
-        EMAIL_REDIRECT_URL: string
+        EMAIL_REDIRECT_BASE_URL: string
         CORS_ORIGIN: string
     }
 }

@@ -51,7 +51,9 @@ export const authController = {
     async refresh(req: Request, res: Response) {
         const cookies = req.cookies
 
-        if (!cookies || !cookies["refresh-token"]) return res.sendStatus(406)
+        if (!cookies || !cookies["refresh-token"]) {
+            return res.sendStatus(406)
+        }
 
         const refreshToken = cookies["refresh-token"]
         try {

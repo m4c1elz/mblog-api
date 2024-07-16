@@ -2,7 +2,7 @@ import nodemailer from "nodemailer"
 import { Email } from "./templates/email"
 import { render } from "@react-email/components"
 
-const { API_MAIL_USER, API_MAIL_PASS, BASE_URL } = process.env
+const { API_MAIL_USER, API_MAIL_PASS, EMAIL_REDIRECT_BASE_URL } = process.env
 
 const transport = nodemailer.createTransport({
     service: "gmail",
@@ -28,8 +28,8 @@ export function sendConfirmationEmail({
                 Email({
                     email: to,
                     authLink: new URL(
-                        `/auth/confirm/${token}`,
-                        BASE_URL
+                        `/verify/${token}`,
+                        EMAIL_REDIRECT_BASE_URL
                     ).toString(),
                 })
             ),
