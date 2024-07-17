@@ -28,12 +28,10 @@ async function seed() {
                         min: 10,
                         max: 100,
                     }),
-                    createdAt: faker.date
-                        .between({
-                            from: new Date("2024-01-01"),
-                            to: new Date(),
-                        })
-                        .toLocaleDateString("en-ca"),
+                    createdAt: faker.date.between({
+                        from: new Date("2023-01-01"),
+                        to: new Date(),
+                    }),
                 })
                 availableUsers.push(user.insertId)
             } catch (error) {
