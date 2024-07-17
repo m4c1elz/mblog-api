@@ -46,7 +46,7 @@ export const userController = {
                 updatedAt: posts.updatedAt,
             })
             .from(posts)
-            .rightJoin(users, eq(users.id, posts.userId))
+            .innerJoin(users, eq(users.id, posts.userId))
             .leftJoin(comments, eq(posts.id, comments.postId))
             .where(eq(users.id, Number(id)))
             .groupBy(posts.id)
