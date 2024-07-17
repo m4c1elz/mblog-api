@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { db } from "../db/connection"
-import { desc, eq, like } from "drizzle-orm"
-import { posts, users } from "../db/schema"
+import { count, desc, eq, like } from "drizzle-orm"
+import { comments, posts, users } from "../db/schema"
 import { hash } from "bcryptjs"
 import type { User } from "../types/user"
 
@@ -28,6 +28,29 @@ export const userController = {
             .offset((Number(page) - 1) * 15)
             .orderBy(users.name)
             .where(like(users.name, search ? `%${search}%` : "%%"))
+
+        return res.json(result)
+    },
+    async getUserPosts(req: Request, res: Response) {
+        const { id } = req.params
+
+        const result = await db
+            .select({
+                id: posts.id,
+                name: users.name,
+                atsign: users.atsign,
+                post: posts.post,
+                likes: posts.likes,
+                comments: count(comments.id),
+                createdAt: posts.createdAt,
+                updatedAt: posts.updatedAt,
+            })
+            .from(posts)
+            .rightJoin(users, eq(users.id, posts.userId))
+            .leftJoin(comments, eq(posts.id, comments.postId))
+            .where(eq(users.id, Number(id)))
+            .groupBy(posts.id)
+            .orderBy(desc(posts.createdAt))
 
         return res.json(result)
     },
