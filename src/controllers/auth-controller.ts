@@ -68,7 +68,10 @@ export const authController = {
                 where: eq(refreshTokens.token, refreshToken),
             })
 
-            if (!token) return res.status(403).send("Token inválido.")
+            if (!token) {
+                res.clearCookie("refresh-token")
+                res.status(403).send("Token inválido. Faça login novamente.")
+            }
 
             const { userId } = decodedToken
 

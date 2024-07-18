@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { db } from "../db/connection"
-import { count, desc, eq, like } from "drizzle-orm"
+import { and, count, desc, eq, like } from "drizzle-orm"
 import { comments, followers, posts, users } from "../db/schema"
 import { hash } from "bcryptjs"
 import type { User } from "../types/user"
@@ -101,6 +101,32 @@ export const userController = {
         if (!result) return res.sendStatus(404)
 
         return res.json(result)
+    },
+    async follow(req: Request, res: Response) {
+        const { userId } = req.user
+        const { id } = req.params
+
+        await db.insert(followers).values({
+            userId: Number(id),
+            followerId: userId,
+        })
+
+        return res.sendStatus(201)
+    },
+    async unfollow(req: Request, res: Response) {
+        const { userId } = req.user
+        const { id } = req.params
+
+        await db
+            .delete(followers)
+            .where(
+                and(
+                    eq(followers.userId, Number(id)),
+                    eq(followers.followerId, userId)
+                )
+            )
+
+        return res.sendStatus(204)
     },
     async updateUser(req: Request, res: Response) {
         const { userId } = req.user
