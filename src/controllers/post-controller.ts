@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { and, desc, eq, sql, count } from "drizzle-orm"
 import { db } from "../db/connection"
-import { users, posts, comments } from "../db/schema"
+import { users, posts, comments, followers } from "../db/schema"
 import type { Post } from "../types/post"
 import type { Comment } from "../types/comment"
 import { alias } from "drizzle-orm/mysql-core"
@@ -64,6 +64,30 @@ export const postController = {
             .leftJoin(comments, eq(comments.postId, posts.id))
             .leftJoin(commentUser, eq(comments.userId, commentUser.id))
             .where(eq(posts.id, Number(id)))
+            .groupBy(posts.id)
+
+        return res.json(result)
+    },
+    async getFollowingPosts(req: Request, res: Response) {
+        const { userId } = req.user
+
+        const result = await db
+            .select({
+                id: posts.id,
+                name: users.name,
+                atsign: users.atsign,
+                post: posts.post,
+                likes: posts.likes,
+                comments: count(comments.id),
+                createdAt: posts.createdAt,
+                updatedAt: posts.updatedAt,
+            })
+            .from(posts)
+            .innerJoin(users, eq(posts.userId, users.id))
+            .innerJoin(followers, eq(users.id, followers.userId))
+            .leftJoin(comments, eq(posts.id, comments.postId))
+            .where(eq(followers.followerId, userId))
+            .orderBy(desc(posts.createdAt))
             .groupBy(posts.id)
 
         return res.json(result)

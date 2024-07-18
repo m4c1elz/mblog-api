@@ -7,6 +7,7 @@ const router = Router()
 router.use("*", validateToken)
 
 router.get("/", postController.getPosts)
+router.get("/following", postController.getFollowingPosts)
 router.get("/:id", postController.getPost)
 router.post("/", postController.createPost)
 router.post("/:id/comments", postController.createComment)
