@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { db } from "../db/connection"
-import { and, count, desc, eq, like } from "drizzle-orm"
+import { and, count, desc, eq, is, like } from "drizzle-orm"
 import { comments, followers, posts, users } from "../db/schema"
 import { hash } from "bcryptjs"
 import type { User } from "../types/user"
@@ -58,6 +58,7 @@ export const userController = {
     },
     async getUserById(req: Request, res: Response) {
         const { id } = req.params
+        const { userId } = req.user
 
         const [result] = await db
             .select({
@@ -77,10 +78,24 @@ export const userController = {
 
         if (!result) return res.sendStatus(404)
 
-        return res.json(result)
+        // verifying if the authenticated user ID and from the requested user exist on the followers table
+        let isFollowing: boolean = false
+        const [followingResult] = await db
+            .select()
+            .from(followers)
+            .where(
+                and(
+                    eq(followers.followerId, userId),
+                    eq(followers.userId, result.id)
+                )
+            )
+        if (followingResult) isFollowing = true
+
+        return res.json({ ...result, isFollowing })
     },
     async getUserByAtsign(req: Request, res: Response) {
         const { atsign } = req.params
+        const { userId } = req.user
 
         const [result] = await db
             .select({
@@ -100,7 +115,20 @@ export const userController = {
 
         if (!result) return res.sendStatus(404)
 
-        return res.json(result)
+        // verifying if the authenticated user ID and from the requested user exist on the followers table
+        let isFollowing: boolean = false
+        const [followingResult] = await db
+            .select()
+            .from(followers)
+            .where(
+                and(
+                    eq(followers.followerId, userId),
+                    eq(followers.userId, result.id)
+                )
+            )
+        if (followingResult) isFollowing = true
+
+        return res.json({ ...result, isFollowing })
     },
     async follow(req: Request, res: Response) {
         const { userId } = req.user
