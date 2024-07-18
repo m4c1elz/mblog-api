@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { db } from "../db/connection"
 import { count, desc, eq, like } from "drizzle-orm"
-import { comments, posts, users } from "../db/schema"
+import { comments, followers, posts, users } from "../db/schema"
 import { hash } from "bcryptjs"
 import type { User } from "../types/user"
 
@@ -18,16 +18,18 @@ export const userController = {
                 name: users.name,
                 atsign: users.atsign,
                 email: users.email,
-                followers: users.followers,
+                followers: count(followers.followerId),
                 description: users.description,
                 createdAt: users.createdAt,
                 updatedAt: users.updatedAt,
             })
             .from(users)
+            .leftJoin(followers, eq(users.id, followers.userId))
             .limit(15)
             .offset((Number(page) - 1) * 15)
             .orderBy(users.name)
             .where(like(users.name, search ? `%${search}%` : "%%"))
+            .groupBy(users.id)
 
         return res.json(result)
     },
@@ -56,35 +58,22 @@ export const userController = {
     },
     async getUserById(req: Request, res: Response) {
         const { id } = req.params
-        const { posts: postQuery } = req.query
-        const result = await db.query.users.findFirst({
-            where: eq(users.id, Number(id)),
-            with:
-                postQuery == "true"
-                    ? {
-                          posts: {
-                              columns: {
-                                  id: true,
-                                  post: true,
-                                  likes: true,
-                                  createdAt: true,
-                                  updatedAt: true,
-                              },
-                              orderBy: desc(posts.createdAt),
-                          },
-                      }
-                    : undefined,
-            columns: {
-                id: true,
-                name: true,
-                atsign: true,
-                email: true,
-                followers: true,
-                description: true,
-                createdAt: true,
-                updatedAt: true,
-            },
-        })
+
+        const [result] = await db
+            .select({
+                id: users.id,
+                name: users.name,
+                atsign: users.atsign,
+                followers: count(followers.id),
+                postCount: count(posts.id),
+                description: users.description,
+                createdAt: users.createdAt,
+            })
+            .from(users)
+            .leftJoin(posts, eq(users.id, posts.userId))
+            .leftJoin(followers, eq(followers.followerId, users.id))
+            .where(eq(users.id, Number(id)))
+            .groupBy(users.id)
 
         if (!result) return res.sendStatus(404)
 
@@ -92,35 +81,22 @@ export const userController = {
     },
     async getUserByAtsign(req: Request, res: Response) {
         const { atsign } = req.params
-        const { posts: postQuery } = req.query
-        const result = await db.query.users.findFirst({
-            where: eq(users.atsign, atsign),
-            with:
-                postQuery == "true"
-                    ? {
-                          posts: {
-                              columns: {
-                                  id: true,
-                                  post: true,
-                                  likes: true,
-                                  createdAt: true,
-                                  updatedAt: true,
-                              },
-                              orderBy: desc(posts.createdAt),
-                          },
-                      }
-                    : undefined,
-            columns: {
-                id: true,
-                name: true,
-                atsign: true,
-                email: true,
-                followers: true,
-                description: true,
-                createdAt: true,
-                updatedAt: true,
-            },
-        })
+
+        const [result] = await db
+            .select({
+                id: users.id,
+                name: users.name,
+                atsign: users.atsign,
+                followers: count(followers.id),
+                postCount: count(posts.id),
+                description: users.description,
+                createdAt: users.createdAt,
+            })
+            .from(users)
+            .leftJoin(posts, eq(users.id, posts.userId))
+            .leftJoin(followers, eq(followers.followerId, users.id))
+            .where(eq(users.atsign, atsign))
+            .groupBy(users.id)
 
         if (!result) return res.sendStatus(404)
 

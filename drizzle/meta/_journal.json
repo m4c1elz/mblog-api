@@ -1,48 +1,55 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "5",
-      "when": 1719794385708,
-      "tag": "0000_slow_iceman",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1720055323419,
-      "tag": "0001_removeNotNullConstraints",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1720056249910,
-      "tag": "0002_addUniqueConstraints",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1720213228114,
-      "tag": "0003_salty_reavers",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1720299737512,
-      "tag": "0004_damp_moonstone",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1720300159636,
-      "tag": "0005_brave_frightful_four",
-      "breakpoints": true
-    }
-  ]
+    "version": "7",
+    "dialect": "postgresql",
+    "entries": [
+        {
+            "idx": 0,
+            "version": "5",
+            "when": 1719794385708,
+            "tag": "0000_slow_iceman",
+            "breakpoints": true
+        },
+        {
+            "idx": 1,
+            "version": "5",
+            "when": 1720055323419,
+            "tag": "0001_removeNotNullConstraints",
+            "breakpoints": true
+        },
+        {
+            "idx": 2,
+            "version": "5",
+            "when": 1720056249910,
+            "tag": "0002_addUniqueConstraints",
+            "breakpoints": true
+        },
+        {
+            "idx": 3,
+            "version": "5",
+            "when": 1720213228114,
+            "tag": "0003_salty_reavers",
+            "breakpoints": true
+        },
+        {
+            "idx": 4,
+            "version": "5",
+            "when": 1720299737512,
+            "tag": "0004_damp_moonstone",
+            "breakpoints": true
+        },
+        {
+            "idx": 5,
+            "version": "5",
+            "when": 1720300159636,
+            "tag": "0005_brave_frightful_four",
+            "breakpoints": true
+        },
+        {
+            "idx": 7,
+            "version": "5",
+            "when": 1721261859739,
+            "tag": "0007_add_followers_table",
+            "breakpoints": true
+        }
+    ]
 }

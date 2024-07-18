@@ -20,7 +20,6 @@ export const users = mysqlTable(
         email: varchar("email", { length: 80 }).unique().notNull(),
         password: varchar("password", { length: 72 }).notNull(),
         name: varchar("name", { length: 30 }),
-        followers: int("followers").default(0).notNull(),
         atsign: varchar("atsign", { length: 20 }).unique(),
         description: text("description"),
         createdAt: datetime("created_at", { mode: "date" })
