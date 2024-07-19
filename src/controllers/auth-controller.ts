@@ -28,10 +28,14 @@ export const authController = {
             userId: user.id,
         })
 
+        const today = new Date()
+        const expireDate = new Date(today)
+        expireDate.setDate(today.getDate() + 7)
+
         await db.insert(refreshTokens).values({
             userId: user.id,
             token: refreshToken,
-            expiresIn: new Date(),
+            expiresIn: expireDate,
         })
 
         res.cookie("refresh-token", refreshToken, {

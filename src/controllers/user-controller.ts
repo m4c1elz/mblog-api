@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { db } from "../db/connection"
-import { and, count, desc, eq, is, like } from "drizzle-orm"
+import { and, count, desc, eq, is, like, sql } from "drizzle-orm"
 import { comments, followers, posts, users } from "../db/schema"
 import { hash } from "bcryptjs"
 import type { User } from "../types/user"
@@ -65,14 +65,16 @@ export const userController = {
                 id: users.id,
                 name: users.name,
                 atsign: users.atsign,
-                followers: count(followers.id),
+                followers: sql`
+                    (SELECT COUNT(${followers.id}) 
+                    FROM ${followers} 
+                    WHERE ${followers.userId} = ${users.id})`,
                 postCount: count(posts.id),
                 description: users.description,
                 createdAt: users.createdAt,
             })
             .from(users)
             .leftJoin(posts, eq(users.id, posts.userId))
-            .leftJoin(followers, eq(followers.followerId, users.id))
             .where(eq(users.id, Number(id)))
             .groupBy(users.id)
 
@@ -102,14 +104,16 @@ export const userController = {
                 id: users.id,
                 name: users.name,
                 atsign: users.atsign,
-                followers: count(followers.id),
+                followers: sql<number>`
+                    (SELECT COUNT(${followers.id}) 
+                    FROM ${followers} 
+                    WHERE ${followers.userId} = ${users.id})`,
                 postCount: count(posts.id),
                 description: users.description,
                 createdAt: users.createdAt,
             })
             .from(users)
             .leftJoin(posts, eq(users.id, posts.userId))
-            .leftJoin(followers, eq(followers.followerId, users.id))
             .where(eq(users.atsign, atsign))
             .groupBy(users.id)
 
