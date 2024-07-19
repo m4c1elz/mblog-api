@@ -24,10 +24,6 @@ async function seed() {
                     atsign: faker.person.firstName().toLowerCase(),
                     description: faker.person.bio(),
                     isVerified: 1,
-                    followers: faker.number.int({
-                        min: 10,
-                        max: 100,
-                    }),
                     createdAt: faker.date.between({
                         from: new Date("2023-01-01"),
                         to: new Date(),
