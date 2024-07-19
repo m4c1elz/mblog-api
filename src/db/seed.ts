@@ -1,75 +1,126 @@
 import { faker } from "@faker-js/faker"
-import { db } from "./connection"
-import { comments, posts, users } from "./schema"
+import { users, comments, posts, followers } from "./schema"
 import { hashSync } from "bcryptjs"
+import { db } from "./connection"
 import { createSpinner } from "nanospinner"
 
 const spinner = createSpinner()
 
 async function seed() {
     spinner.start({
-        text: "Gerando usuários...",
+        text: "Initializing...",
     })
 
-    let availableUsers: number[] = []
-    let availablePosts: number[] = []
+    const seedUsers: (typeof users.$inferInsert)[] = []
+    const seedPosts: (typeof posts.$inferInsert)[] = []
+    const seedComments: (typeof comments.$inferInsert)[] = []
+    const seedFollowers: (typeof followers.$inferInsert)[] = []
 
-    await Promise.all(
-        Array.from({ length: 20 }).map(async () => {
-            try {
-                const [user] = await db.insert(users).values({
-                    name: faker.person.firstName(),
-                    email: faker.internet.email(),
-                    password: hashSync(faker.internet.password(), 10),
-                    atsign: faker.person.firstName().toLowerCase(),
-                    description: faker.person.bio(),
-                    isVerified: 1,
-                    createdAt: faker.date.between({
-                        from: new Date("2023-01-01"),
-                        to: new Date(),
-                    }),
-                })
-                availableUsers.push(user.insertId)
-            } catch (error) {
-                console.log(error)
-            }
-        })
+    spinner.update({ text: "Creating users..." })
+
+    const uniqueIds = faker.helpers.uniqueArray(
+        () => faker.number.int({ max: 800 }),
+        80
     )
+    const uniqueAtsigns = faker.helpers.uniqueArray(
+        () => faker.person.firstName().toLowerCase(),
+        20
+    )
+
+    Array.from({ length: 20 }).forEach((_, index) => {
+        seedUsers.push({
+            id: uniqueIds[index],
+            name: faker.person.firstName(),
+            atsign: uniqueAtsigns[index],
+            email: faker.internet.email(),
+            description: faker.person.bio(),
+            password: hashSync("senha123", 10),
+            createdAt: faker.date.between({
+                from: "2024-01-01",
+                to: "2024-07-16",
+            }),
+            isVerified: 1,
+        })
+    })
+
+    spinner.update({ text: "Creating posts..." })
+
+    Array.from({ length: 50 }).forEach((_, index) => {
+        const randomUser = Math.floor(Math.random() * seedUsers.length)
+
+        const userId = seedUsers[randomUser].id as number
+
+        seedPosts.push({
+            id: uniqueIds[index],
+            userId,
+            post: faker.lorem.sentence(),
+            createdAt: faker.date.between({
+                from: "2024-01-01",
+                to: "2024-07-16",
+            }),
+        })
+    })
+
+    spinner.update({ text: "Creating comments..." })
+
+    Array.from({ length: 50 }).forEach((_, index) => {
+        const randomUser = Math.floor(Math.random() * seedUsers.length)
+        const userId = seedUsers[randomUser].id as number
+
+        const randomPost = Math.floor(Math.random() * seedPosts.length)
+        const postId = seedPosts[randomPost].id as number
+
+        seedComments.push({
+            id: uniqueIds[index],
+            userId,
+            postId,
+            comment: faker.lorem.sentence(),
+            createdAt: faker.date.between({
+                from: "2024-01-01",
+                to: "2024-07-16",
+            }),
+        })
+    })
+
+    spinner.update({ text: "Creating followers..." })
+
+    for (const _ in [0]) {
+        let lastCombination: number[][] = []
+        let currentIndex: number = -1
+        for (const _ in seedUsers) {
+            currentIndex++
+            const randomUserIndex = Math.floor(Math.random() * seedUsers.length)
+            const randomUser = seedUsers[randomUserIndex]
+
+            const randomFollowerIndex = Math.floor(
+                Math.random() * seedUsers.length
+            )
+            const randomFollower = seedUsers[randomFollowerIndex]
+
+            if (randomUser.id === randomFollower.id) continue
+
+            const combination = [randomUser.id!, randomFollower.id!]
+            if (combination === lastCombination[currentIndex]) continue
+
+            seedFollowers.push({
+                userId: randomUser.id!,
+                followerId: randomFollower.id!,
+            })
+            lastCombination.push([randomUser.id!, randomFollower.id!])
+        }
+    }
 
     spinner.update({
-        text: "Adicionando postagens...",
+        text: "Pushing data to database...",
     })
 
-    await Promise.all(
-        availableUsers.map(async user => {
-            const [post] = await db.insert(posts).values({
-                userId: user,
-                post: faker.person.bio(),
-            })
-            availablePosts.push(post.insertId)
-        })
-    )
-
-    spinner.update({
-        text: "Adicionando comentários...",
-    })
-
-    await Promise.all(
-        availablePosts.map(async post => {
-            await db.insert(comments).values({
-                postId: availablePosts[
-                    Math.floor(Math.random() * availableUsers.length)
-                ],
-                userId: availableUsers[
-                    Math.floor(Math.random() * availableUsers.length)
-                ],
-                comment: faker.person.bio(),
-            })
-        })
-    )
+    await db.insert(users).values(seedUsers)
+    await db.insert(posts).values(seedPosts)
+    await db.insert(comments).values(seedComments)
+    await db.insert(followers).values(seedFollowers)
 
     spinner.success({
-        text: "Seed do banco de dados feito com sucesso.",
+        text: "Database seeded with success.",
     })
 
     process.exit()
