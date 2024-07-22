@@ -10,12 +10,6 @@ interface UpdateUserParams {
 }
 
 export async function updateUser({ userId, userData }: UpdateUserParams) {
-    if (userData.password) {
-        userData.password = await hash(userData.password, 10)
-    } else {
-        delete userData.password
-    }
-
     await db
         .update(users)
         .set({
