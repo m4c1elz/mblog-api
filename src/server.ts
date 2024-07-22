@@ -4,6 +4,7 @@ import { userRouter } from "./routes/user-routes"
 import { authRouter } from "./routes/auth-routes"
 import cookieParser from "cookie-parser"
 import cors from "cors"
+import "express-async-errors"
 
 const app = express()
 const port = process.env.PORT || 8080
