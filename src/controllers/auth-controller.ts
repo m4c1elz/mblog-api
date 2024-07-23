@@ -2,23 +2,24 @@ import { Request, Response } from "express"
 import { db } from "../db/connection"
 import { eq } from "drizzle-orm"
 import { refreshTokens, users } from "../db/schema"
-import { compare, hash } from "bcryptjs"
+import { compare } from "bcryptjs"
 import { createTokens } from "../helpers/create-tokens"
 import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken"
 import type { User } from "../types/user"
 import { sendConfirmationEmail } from "../mail/mail"
 import { UserPayload } from "../types/user-payload"
+import * as authServices from "../services/auth"
 
 export const authController = {
     async login(req: Request, res: Response) {
         const { email, password } = req.body
 
-        const user = await db.query.users.findFirst({
-            where: eq(users.email, email),
-        })
+        const user = await authServices.findUserByEmail({ email })
 
-        if (!user)
+        if (!user) {
             return res.status(404).json({ msg: "Esse usuário não existe." })
+        }
+
         if (user.isVerified !== 1) return res.sendStatus(403)
 
         const isPasswordCorrect = await compare(password, user.password)
@@ -28,14 +29,9 @@ export const authController = {
             userId: user.id,
         })
 
-        const today = new Date()
-        const expireDate = new Date(today)
-        expireDate.setDate(today.getDate() + 7)
-
-        await db.insert(refreshTokens).values({
+        await authServices.saveRefreshToken({
             userId: user.id,
             token: refreshToken,
-            expiresIn: expireDate,
         })
 
         res.cookie("refresh-token", refreshToken, {
@@ -85,9 +81,7 @@ export const authController = {
         } catch (error) {
             if (error instanceof TokenExpiredError) {
                 console.log(error.message)
-                await db
-                    .delete(refreshTokens)
-                    .where(eq(refreshToken, refreshTokens.token))
+                await authServices.deleteRefreshToken({ refreshToken })
                 return res.status(403).send("Este token foi expirado.")
             }
             return res.sendStatus(500)
@@ -96,21 +90,17 @@ export const authController = {
     async register(req: Request, res: Response) {
         const { email, password }: User = req.body
 
-        const userAlreadyExists = await db.query.users.findFirst({
-            where: eq(users.email, email),
-        })
+        const userAlreadyExists = await authServices.findUserByEmail({ email })
 
         if (userAlreadyExists)
             return res.status(409).send("Este usuário já existe!")
 
         const atsign = email.match(/^[^@]+/)![0]
 
-        const [newUser] = await db.insert(users).values({
+        const newUser = await authServices.registerUser({
             email,
-            password: await hash(password, 10),
-            name: atsign,
             atsign,
-            isVerified: 0,
+            password,
         })
 
         const accessToken = jwt.sign(
@@ -140,7 +130,7 @@ export const authController = {
     async logout(req: Request, res: Response) {
         const { userId } = req.user
 
-        await db.delete(refreshTokens).where(eq(refreshTokens.userId, userId))
+        await authServices.logoutUser({ userId })
         res.clearCookie("refresh-token")
         return res.sendStatus(204)
     },
@@ -155,13 +145,7 @@ export const authController = {
             })
             if (!user) return res.send("Este usuário não existe!")
 
-            await db
-                .update(users)
-                .set({
-                    isVerified: 1,
-                    updatedAt: new Date(),
-                })
-                .where(eq(users.id, userId))
+            await authServices.setVerifiedUser({ userId })
 
             // will change to a redirect when front-end gets to work
             return res.status(200).send({
