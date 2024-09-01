@@ -1,7 +1,7 @@
 # MBlog
 
 MBlog is a social media web app, made entirely in Typescript.
-This repo contains the backend code for MBlog.
+This repo contains the backend code for MBlog. You can find the frontend code [here.](https://github.com/m4c1elz/mblog-web)
 
 # Setup
 
