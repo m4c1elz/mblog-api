@@ -8,7 +8,15 @@ import { alias } from "drizzle-orm/mysql-core"
 
 export const postController = {
     async getPosts(req: Request, res: Response) {
-        const { page } = req.query
+        const { page = 1 } = req.query
+
+        const [totalPosts] = await db
+            .select({
+                result: count(posts.id),
+            })
+            .from(posts)
+
+        const pages = Math.ceil(totalPosts.result / 15)
 
         const result = await db
             .select({
@@ -29,7 +37,10 @@ export const postController = {
             .limit(15)
             .offset((Number(page) - 1) * 15)
 
-        res.status(200).json(result)
+        res.status(200).json({
+            pages,
+            posts: result,
+        })
     },
     async getPost(req: Request, res: Response) {
         const { id } = req.params
