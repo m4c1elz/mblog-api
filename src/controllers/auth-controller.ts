@@ -114,7 +114,7 @@ export const authController = {
         )
 
         try {
-            sendConfirmationEmail({
+            await sendConfirmationEmail({
                 to: email,
                 token: accessToken,
             })

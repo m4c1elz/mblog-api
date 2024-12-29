@@ -12,14 +12,14 @@ const transport = nodemailer.createTransport({
     },
 })
 
-export function sendConfirmationEmail({
+export async function sendConfirmationEmail({
     to,
     token,
 }: {
     to: string
     token: string
 }) {
-    transport.sendMail({
+    await transport.sendMail({
         from: API_MAIL_USER,
         to,
         subject: "Verificação de email",
